@@ -1,0 +1,18 @@
+[Unit]
+Description=Plex
+After=docker.service
+Requires=docker.service
+After=mnt-content.mount
+Requires=mnt-content.mount
+
+[Service]
+TimeoutStartSec=0
+ExecStartPre=-/usr/bin/docker kill plex
+ExecStartPre=-/usr/bin/docker rm plex
+ExecStartPre=-/usr/bin/docker pull wernight/plex-media-server
+ExecStart=/usr/bin/docker run --net="host" --name="plex" -v /mnt/content/conf:/config -v /mnt/content/movies:/movies -v /mnt/content/shows:/shows -v /etc/localtime:/etc/localtime:ro -p 32400:32400 wernight/plex-media-server
+ExecStop=/usr/bin/docker stop plex
+
+[Install]
+WantedBy=multi-user.target
+

@@ -1,0 +1,20 @@
+[Unit]
+Description=Transmission
+After=docker.service
+Requires=docker.service
+After=mnt-content.mount
+Requires=mnt-content.mount
+
+[Service]
+TimeoutStartSec=0
+ExecStartPre=-/usr/bin/docker kill transmission
+ExecStartPre=-/usr/bin/docker rm transmission
+ExecStartPre=-/usr/bin/docker pull haugene/transmission-openvpn
+ExecStart=/usr/bin/docker run --privileged --name transmission --dns 8.8.8.8 -v /mnt/content/inprogress/:/data -e "OPENVPN_PROVIDER=PIA" -e "OPENVPN_CONFIG=US Seattle" -e "OPENVPN_USERNAME=user" -e "OPENVPN_PASSWORD=pass" -p 9091:9091 haugene/transmission-openvpn
+ExecStop=/usr/bin/docker stop transmission
+
+[Install]
+WantedBy=multi-user.target
+
+[X-Fleet]
+MachineID=34998f08

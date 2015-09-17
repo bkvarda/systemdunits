@@ -1,0 +1,18 @@
+[Unit]
+Description=Couchpotato
+After=docker.service
+Requires=docker.service
+After=mnt-content.mount
+Requires=mnt-content.mount
+
+[Service]
+TimeoutStartSec=0
+ExecStartPre=-/usr/bin/docker kill couchpotato
+ExecStartPre=-/usr/bin/docker rm couchpotato
+ExecStartPre=-/usr/bin/docker pull needo/couchpotato
+ExecStart=/usr/bin/docker run --net="host" --name="couchpotato" -v /mnt/content/conf:/config -v /mnt/content/inprogress:/downloads -v /mnt/content/movies:/movies -v /etc/localtime:/etc/localtime:ro -e EDGE=1 -p 5050:5050 needo/couchpotato
+ExecStop=/usr/bin/docker stop couchpotato
+
+[Install]
+WantedBy=multi-user.target
+

@@ -1,0 +1,23 @@
+[Unit]
+Description=Nginx
+After=docker.service
+Requires=docker.service
+After=mnt-content.mount
+Requires=mnt-content.mount
+Requires=transmission.service
+After=transmission.service
+
+
+[Service]
+TimeoutStartSec=0
+ExecStartPre=-/usr/bin/docker kill nginx
+ExecStartPre=-/usr/bin/docker rm nginx
+ExecStartPre=-/usr/bin/docker pull nginx
+ExecStart=/usr/bin/docker run --privileged --name nginx -v /mnt/content/conf/nginx.conf:/etc/nginx/nginx.conf:ro -p 8080:8080 nginx
+ExecStop=/usr/bin/docker stop nginx
+
+[Install]
+WantedBy=multi-user.targeti
+
+[X-Fleet]
+MachineOf=transmission.service
